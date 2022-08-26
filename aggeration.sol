@@ -1,7 +1,7 @@
-      // SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
-
+import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/release-v3.4/contracts/access/Ownable.sol";
 import "./AsvaInvestmentsInfo.sol";
 
 interface ITierIDOPool {
@@ -28,7 +28,7 @@ interface IClaimer {
 }
 
 
-contract Aggeration {
+contract Aggeration is Ownable {
   ITierIDOPool  idoPool;
   IClaimer     iclaimpool;
   AsvaInvestmentsInfo public immutable AsvaInfo;
@@ -48,20 +48,54 @@ IClaimer claim;
 
 project[] public projectlist;
 
-function set(uint256 id ,address a, address c)public{
+function singleprojectadd(uint256 id ,address a, address c)public onlyOwner{
 project memory temp = project(id,ITierIDOPool(a),IClaimer(c));
 projectlist.push(temp);
 }
 //[["1","0x7a8659B8443DC10CA0c5C51809981F88cbdB591a","0x87387955aCb7b5B00726004Ef9fe498EB5a3F097"]]
 
-function multipool(project[] memory t)public{
+function multipool(project[] memory t)public onlyOwner{
 for(uint256 i=0; i<t.length; i++){
   project memory temp = project(t[i].id,t[i].pool,t[i].claim);
   projectlist.push(temp); 
 }
 
 }
+// function Addpool(uint256 _projcetid,address a)public  onlyOwner returns(address )  
+//   {
+//     bool isIDOCintract =AsvaInfo.getIDOAddress(a);
+//     require(isIDOCintract== true, "Address should be added in Pool info befor creating claim");
+//     idoPool= ITierIDOPool(a);
+//     for(uint256 i =0 ; i< projectlist.length; i++)
+//     {
+//     if(projectlist[i].id == _projcetid){
+//       projectlist[i].pool = a;
+//     }
+//     else{
+//       project memory temp = project(_projcetid,a,0x0000000000000000000000000000000000000000);
+//       projectlist.push(temp);
+//     }
+//     }
+//     return a;
+//   } 
 
+// function Addclaimpool(uint256 _projcetid,address a)public onlyOwner returns(address ) {
+//     bool isClaimcontract =AsvaInfo.alreadyClaimAdded(a);
+//     require(isClaimcontract== true, "Address should be added in Pool info before creating claim");
+//     iclaimpool= IClaimer(a);
+//   for(uint256 i =0 ; i< projectlist.length; i++)
+//     {
+//       if(projectlist[i].id == _projcetid)
+//      {
+//       projectlist[i].claimpool = a;
+//      }
+//      else{
+//          project memory temp = project(_projcetid,0x0000000000000000000000000000000000000000,a);
+//       projectlist.push(temp);
+//      }
+//     }
+//     return a;
+//   } 
 
 
 function get (address user)public view returns(uint256[]memory,address[] memory ,uint256[] memory ,address[] memory,uint256[] memory){
