@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/3.0.0-rc.5/web3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <title>Web3js Contract Integration</title>
+
+</head>
+<body>
+    <div class="container">
+        <div style="margin-top: 30px;" class="row text-center">
+            <div class="col-md-12">
+                <h2>Staking Interactions</h2>
+            </div>
+        </div>
+
+        
+        <div class="row text-center">
+            <div class="col-md-12">
+                <span id="status"></span>
+            </div>
+        </div>
+        <section class="contract-section hidden">
+            <div style="margin-top: 30px;" class="row text-center">
+                <div class="col-md-12">
+                    <h3>Contract Info :  '0x2cf5445b61d617042eB121bf5e968A8ea5Ee4243'  </h3>
+                </div>
+            </div>
+			<div class="col-md-12 text-center">
+                <div class="col-md-4 offset-4">
+                    <span>user address: <input id="getValue1" type="text" class="form-control" value="">               
+                </div>
+            <div class="row text-center">
+                <div class="col-md-4 offset-4">
+                    <span>stake amount: <i id="stake1"></i>
+
+                     <input id='stakeamount' type="text" class="form-control" value="">
+					 <button id="stake" class="btn btn-primary">stake</button></span>
+					 
+					 <div>Transcation Hash : <i id="tx"></i></div>
+
+                </div>
+            </div>
+			<div class="row text-center">
+                <div class="col-md-4 offset-4">
+                    <span>unstake amount: <i id="unstake"></i>
+
+                     <input id='unstakeamount' type="text" class="form-control" value="">
+					 <button id="unstake1" class="btn btn-primary">unstake</button></span>
+					 
+					 <div>Transcation Hash : <i id="tx2"></i></div>
+
+                </div>
+            </div>
+			<div class="row text-center">
+                <div class="col-md-12">
+                    <span>Current reward Value: <i id="getValue"></i></span>
+                </div>
+            </div>
+
+           
+					
+					<div style="margin-top: 30px;" class="row text-center">
+						<div class="col-md-12">
+							<button id="reward" class="btn btn-primary">reward</button>
+						</div>
+					</div>
+       			 </span>       
+			</div>
+
+
+        </section>
+        <div style="margin-top: 30px;" class="row text-center">
+            <div class="col-md-12">
+                    <span> RewardToken: <i id="token"></i></span>
+					<div style="margin-top: 30px;" class="row text-center"></div>
+                <button   id="tokenb" class="btn btn-primary">RewardToken</button>
+            </div>
+        </div>
+    </div>
+<script>
+
+
+
+const url = 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161';
+let web3; 
+try {            
+       web3 = new Web3(new Web3(url));
+            } catch (error) {
+                alert(error)
+            }            
+var contractAddress = '0x2cf5445b61d617042eB121bf5e968A8ea5Ee4243';
+const abi = [
+	{
+		"inputs": [],
+		"name": "getReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "stake",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "_token",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "earned",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastUpdateTime",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "rewardPerToken",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "rewardPerTokenStored",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "rewardRate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "rewards",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "rewardsToken",
+		"outputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "stakingToken",
+		"outputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "userRewardPerTokenPaid",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+  contract = new web3.eth.Contract(abi, contractAddress);
+  const account = document.getElementById("getValue1");
+  const amount = document.getElementById('stakeamount');
+  const account1 = document.getElementById("address22");
+  
+
+
+var privKey="0xfe0fec840cfc0d687ae949506a40c74095b104a6a999b5055d1336d0baebfc4d";
+const data = contract.methods.stake(
+    '10'
+ ).encodeABI()   
+ 
+const data2 = contract.methods.withdraw('10').encodeABI()
+$('#unstake1').click(function(){
+	unstake_function()
+});
+
+
+async function unstake_function(){
+	console.log(`unstaking from ${(account.value)}`);
+	const c = await web3.eth.accounts.signTransaction(
+		{
+			from: `${(account.value)}`,
+			to : contractAddress,
+			data:data2,
+			gas:'300000'
+		},privKey
+
+	);
+	const cr = await web3.eth.sendSignedTransaction(c.rawTransaction);
+	console.log(`Transaction successful with hash: ${cr.transactionHash}` ); 
+	document.getElementById('tx2').innerHTML = cr.transactionHash; 
+}
+
+$('#stake').click(function() {
+                        deploy()
+                        });
+                        
+async function deploy()  {
+            console.log(
+       `Attempting to make transaction from ${(account.value)}`);
+  		  const createTransaction = await web3.eth.accounts.signTransaction(
+       {
+          from: '0xCCd867d93dd4f713971E075f8f7418B8524c1da2',
+          to: contractAddress,
+          data: data,
+          gas: '300000'
+       },
+       privKey // private key variable
+    );
+    const createReceipt = await web3.eth.sendSignedTransaction(createTransaction.rawTransaction);
+    console.log(`Transaction successful with hash: ${createReceipt.transactionHash}` ); 
+	document.getElementById('tx').innerHTML = createReceipt.transactionHash;
+} 
+
+
+
+
+
+  $('#tokenb').click(function() {
+                rt()
+            });
+
+  function rt() {
+    contract.methods.rewardsToken().call().then( function( info ) {
+      console.log("info: ", info);
+      document.getElementById('token').innerHTML = info;
+    });
+  }
+  
+  $('#reward').click(function() {
+                hello()
+            });
+
+  function hello() {
+    contract.methods.earned(account.value).call().then( function( info ) {
+      console.log("info: ", info);
+      document.getElementById('getValue').innerHTML = info;
+    });
+  }
+
+</script>
+
+
+</body>
+</html>
